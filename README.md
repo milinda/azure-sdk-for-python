@@ -1,4 +1,7 @@
-# Windows Azure SDK for Python
+# Fork of Windows Azure SDK for Python
+
+**I am adding Service Management API support for Windows Azure SDK for
+Python to use in my research work.**
 
 This project provides a set of Python packages that make it easy to access
 the Windows Azure storage and queue services. For documentation on how
