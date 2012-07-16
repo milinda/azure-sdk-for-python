@@ -28,6 +28,7 @@ BLOB_SERVICE_HOST_BASE = '.blob.core.windows.net'
 QUEUE_SERVICE_HOST_BASE = '.queue.core.windows.net'
 TABLE_SERVICE_HOST_BASE = '.table.core.windows.net'
 SERVICE_BUS_HOST_BASE = '.servicebus.windows.net'
+HOSTED_SERVICE_HOST_BASE = 'management.core.windows.net'
 
 #Development ServiceClient URLs
 DEV_BLOB_HOST = '127.0.0.1:10000'

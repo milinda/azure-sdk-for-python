@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------
-# Copyright 2011 Microsoft Corporation
+# Copyright 2012 Milinda Pathirage
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,7 +30,20 @@ class HostedService:
         self.location = None
         self.affinity_group = None
         self.extended_properties = []
-        pass
+
+    def add_property(self, name, value):
+        self.extended_properties.append((name, value))
+
+class Deployment:
+
+    def __init__(self):
+        self.name = None
+        self.package_url = None
+        self.label = None
+        self.configuration = None
+        self.start_deployment = True
+        self.treat_wranings_as_errors = True
+        self.extended_properties = []
 
     def add_property(self, name, value):
         self.extended_properties.append((name, value))

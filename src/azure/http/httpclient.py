@@ -32,7 +32,7 @@ class _HTTPClient:
     Takes the request and sends it to cloud service and returns the response.
     '''
 
-    def __init__(self, service_instance, cert_file=None, account_name=None, account_key=None, service_namespace=None, issuer=None, x_ms_version=None, protocol='https'):
+    def __init__(self, service_instance, key_file=None, cert_file=None, account_name=None, account_key=None, service_namespace=None, issuer=None, x_ms_version=None, protocol='https'):
         '''
         service_instance: service client instance. 
         cert_file: certificate file name/location. This is only used in hosted service management.
@@ -47,6 +47,7 @@ class _HTTPClient:
         self.respheader = None
         self.message = None
         self.cert_file = cert_file
+        self.key_file = key_file
         self.account_name = account_name
         self.account_key = account_key    
         self.service_namespace = service_namespace    
@@ -66,7 +67,10 @@ class _HTTPClient:
         elif self.protocol == 'http':
             _connection = httplib.HTTPConnection(request.host)
         else:
-            _connection = httplib.HTTPSConnection(request.host, cert_file=self.cert_file)
+            if self.key_file is not None:
+                _connection = httplib.HTTPSConnection(request.host, key_file=self.key_file, cert_file=self.cert_file)
+            else:
+                _connection = httplib.HTTPSConnection(request.host, cert_file=self.cert_file)
         return _connection
 
     def send_request_headers(self, connection, request_headers):
