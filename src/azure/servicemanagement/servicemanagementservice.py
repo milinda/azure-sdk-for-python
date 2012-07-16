@@ -16,7 +16,9 @@
 from azure.http import (HTTPError, HTTPRequest)
 from azure.http.httpclient import _HTTPClient
 from azure.servicemanagement import (x_ms_version, _update_hosted_service_header,
-                                 _hosted_service_error_handler, _convert_hosted_service_to_xml)
+                                 _hosted_service_error_handler, _convert_hosted_service_to_xml,
+                                 DEPLOYMENT_SLOT_PRODUCTION, DEPLOYMENT_SLOT_STAGING,
+                                 _convert_deployment_to_xml)
 from azure import (_validate_not_none, _dont_fail_on_exist,
                    WindowsAzureError,  HOSTED_SERVICE_HOST_BASE, _ERROR_VALUE_SHOULD_NOT_BE_NULL)
 
@@ -72,7 +74,6 @@ class ServiceManagementService:
         request.host = HOSTED_SERVICE_HOST_BASE
         request.path = '/' + self.subscription_id + '/services/hostedservices/' + hosted_service_to_delete
         request.headers = _update_hosted_service_header(request)
-
         try:
             self._perform_request(request)
             return True
@@ -80,7 +81,49 @@ class ServiceManagementService:
             _dont_fail_on_exist(e)
             return False
 
-    def _perform_request(self, request):
+    def create_deployment(self, deployment=None, service_name=None, deployment_slot=DEPLOYMENT_SLOT_STAGING):
+
+        request = HTTPRequest()
+        request.method = 'POST'
+        request.host = HOSTED_SERVICE_HOST_BASE
+        request.path = '/' + self.subscription_id + '/services/hostedservices/' + service_name + '/deploymentslots/'  + deployment_slot
+        request.headers = _update_hosted_service_header(request)
+        request.body = _convert_deployment_to_xml(deployment)
+
+        try:
+            resp = self._perform_request(request)
+            for name, value in resp.headers:
+                if name.lower() == 'x-ms-request-id':
+                    return value
+            raise WindowsAzureError('Cannot find header x-ms-request-id in response.')
+        except WindowsAzureError as e:
+            raise e
+
+    def delete_deployment(self, hosted_service_name=None, deployment_name=None, deployment_slot=None):
+        request = HTTPRequest()
+        request.method = 'DELETE'
+        request.host = HOSTED_SERVICE_HOST_BASE
+
+        if deployment_slot is not None:
+            request.path = '/' + self.subscription_id + '/services/hostedservices/' + hosted_service_name + '/deploymentslots/' + deployment_slot
+        elif deployment_name is not None:
+            request.path = '/' + self.subscription_id + '/services/hostedservices/' + hosted_service_name + '/deployments/' + deployment_name
+        else:
+            raise TypeError('Both deployment_name and deployment_slot cannot be None.')
+
+        request.headers = _update_hosted_service_header(request)
+
+        try:
+            resp = self._perform_request(request)
+            for name, value in resp.headers:
+                if name.lower() == 'x-ms-request-id':
+                    return value
+            raise WindowsAzureError('Cannot find header x-ms-request-id in response.')
+        except WindowsAzureError as e:
+            raise e
+
+
+def _perform_request(self, request):
         try:
             resp = self._filter(request)
         except HTTPError as e:

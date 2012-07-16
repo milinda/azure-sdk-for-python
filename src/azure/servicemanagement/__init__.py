@@ -21,6 +21,9 @@ import azure
 
 x_ms_version = '2010-10-28'
 
+DEPLOYMENT_SLOT_PRODUCTION = 'production'
+DEPLOYMENT_SLOT_STAGING = 'staging'
+
 class HostedService:
 
     def __init__(self):
@@ -90,3 +93,20 @@ def _convert_hosted_service_to_xml(hosted_service):
     desc=xml_escape(hosted_service.description), location=xml_escape(hosted_service.location))
 
     return xml_content
+
+def _convert_deployment_to_xml(deployment):
+    xml_content = '<?xml version="1.0" encoding="utf-8"?> \
+<CreateDeployment xmlns="http://schemas.microsoft.com/windowsazure">\
+    <Name>{deployment_name}</Name>\
+    <PackageUrl>{package_url}</PackageUrl>\
+    <Label>{deployment_label}</Label>\
+    <Configuration>{configuration_file}</Configuration>\
+    <StartDeployment>{start_deployment}</StartDeployment>\
+    <TreatWarningsAsError>{warnings_as_errors}</TreatWarningsAsError>\
+</CreateDeployment>'
+
+    return xml_content.format(deployment_name=deployment.name, package_url=deployment.package_url,
+                            deployment_label=base64.b64encode(deployment.label),
+                            configuration_file=base64.b64encode(deployment.configuration),
+                            start_deployment=str(deployment.start_deployment).lower(),
+                            warnings_as_errors=str(deployment.treat_wranings_as_errors).lower())
