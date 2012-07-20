@@ -22,5 +22,6 @@ setup(name='azure',
       packages=['azure',
                 'azure.http',
                 'azure.servicebus',
-                'azure.storage']
+                'azure.storage',
+                'azure.servicemanagement']
      )

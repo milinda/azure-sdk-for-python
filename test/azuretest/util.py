@@ -63,6 +63,15 @@ class Credentials(object):
     def getHostServiceID(self):
         return self.ns[u'hostserviceid']
 
+    def getSubscriptionID(self):
+        return self.ns[u'subscriptionid']
+
+    def getCertFilePath(self):
+        return self.ns[u'certfile']
+
+    def getKeyFilePath(self):
+        return self.ns[u'keyfile']
+
 credentials = Credentials()
 
 def getUniqueTestRunID():
